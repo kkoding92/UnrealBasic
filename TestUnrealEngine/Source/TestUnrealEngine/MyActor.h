@@ -29,4 +29,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category=BattleStat)
 	int32 Hp;
+
+	float RotateSpeed = 30.f;
 };
