@@ -11,7 +11,7 @@
 // Sets default values
 AMyCharacter::AMyCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SPRINGARM"));
@@ -37,7 +37,10 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
+
 }
 
 // Called every frame
@@ -62,11 +65,12 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::Attack()
 {
-	auto AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-	if (AnimInstance)
-	{
-		AnimInstance->PlayAttackMontage();
-	}
+	if (IsAttacking)
+		return;
+
+	AnimInstance->PlayAttackMontage();
+
+	IsAttacking = true;
 }
 
 void AMyCharacter::UpDown(float Value)
@@ -90,5 +94,10 @@ void AMyCharacter::LeftRight(float Value)
 void AMyCharacter::Yaw(float Value)
 {
 	AddControllerYawInput(Value);
+}
+
+void AMyCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	IsAttacking = false;
 }
 
