@@ -69,6 +69,9 @@ void AMyCharacter::Attack()
 		return;
 
 	AnimInstance->PlayAttackMontage();
+	AnimInstance->JumpToSection(AttackIndex);
+
+	AttackIndex = (AttackIndex + 1) % 3;
 
 	IsAttacking = true;
 }
@@ -79,6 +82,7 @@ void AMyCharacter::UpDown(float Value)
 		return;
 
 	//UE_LOG(LogTemp, Warning, TEXT("UpDown %f"), Value);
+	UpDownValue = Value;
 	AddMovementInput(GetActorForwardVector(), Value);
 }
 
@@ -88,6 +92,7 @@ void AMyCharacter::LeftRight(float Value)
 		return;
 
 	//UE_LOG(LogTemp, Warning, TEXT("LeftRight %f"), Value);
+	LeftRightValue = Value;
 	AddMovementInput(GetActorRightVector(), Value);
 }
 

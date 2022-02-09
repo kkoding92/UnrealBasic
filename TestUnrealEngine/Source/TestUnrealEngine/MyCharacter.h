@@ -41,9 +41,19 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category=Pawn)
 	bool IsAttacking = false;
 
 	UPROPERTY()
+	int32 AttackIndex = 0;
+
+	UPROPERTY()
 	class UMyAnimInstance* AnimInstance;
+
+public:
+	UPROPERTY()
+	float UpDownValue = 0;
+
+	UPROPERTY()
+	float LeftRightValue = 0;
 };
