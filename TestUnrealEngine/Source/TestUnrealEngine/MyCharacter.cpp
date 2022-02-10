@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "MyAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 
 // Sets default values
@@ -100,6 +101,18 @@ void AMyCharacter::AttackCheck()
 		ECollisionChannel::ECC_EngineTraceChannel2, // 이전에 만든 트레이스 채널
 		FCollisionShape::MakeSphere(AttackRadius), // 스피어 모양으로 충돌 체크
 		Params);
+
+	FVector Vec = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + Vec * 0.5f;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat Rotation = FRotationMatrix::MakeFromZ(Vec).ToQuat();
+	FColor DrawColor;
+	if (bResult)
+		DrawColor = FColor::Green;
+	else
+		DrawColor = FColor::Red;
+
+	DrawDebugCapsule(GetWorld(), Center, HalfHeight, AttackRadius, Rotation, DrawColor, false, 2.f);
 
 	// 충돌이 일어났고 대상이 유효하다면
 	if (bResult && HitResult.Actor.IsValid())
