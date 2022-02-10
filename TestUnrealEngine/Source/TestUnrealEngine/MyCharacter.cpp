@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "MyAnimInstance.h"
 #include "DrawDebugHelpers.h"
+#include "MyWeapon.h"
 
 
 // Sets default values
@@ -32,25 +33,35 @@ AMyCharacter::AMyCharacter()
 	if (SM.Succeeded())
 		GetMesh()->SetSkeletalMesh(SM.Object);
 
-	FName WeaponSocket(TEXT("hand_l_socket"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket))
-	{
-		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
+	//FName WeaponSocket(TEXT("hand_l_socket"));
+	//if (GetMesh()->DoesSocketExist(WeaponSocket))
+	//{
+	//	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WEAPON"));
 
-		static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonGreystone/FX/Meshes/Heroes/Greystone/SM_Greystone_Blade_01.SM_Greystone_Blade_01'"));
-		if (SW.Succeeded())
-		{
-			Weapon->SetStaticMesh(SW.Object);
-		}
+	//	static ConstructorHelpers::FObjectFinder<UStaticMesh> SW(TEXT("StaticMesh'/Game/ParagonGreystone/FX/Meshes/Heroes/Greystone/SM_Greystone_Blade_01.SM_Greystone_Blade_01'"));
+	//	if (SW.Succeeded())
+	//	{
+	//		Weapon->SetStaticMesh(SW.Object);
+	//	}
 
-		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	}
+	//	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	//}
 }
 
 // Called when the game starts or when spawned
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//FName WeaponSocket(TEXT("hand_l_socket"));
+
+	auto CurrentWeapon = GetWorld()->SpawnActor<AMyWeapon>(FVector::ZeroVector, FRotator::ZeroRotator);
+	if (CurrentWeapon)
+	{
+		//CurrentWeapon->AttachToComponent(GetMesh(),
+		//	FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		//	WeaponSocket);
+	}
 }
 
 void AMyCharacter::PostInitializeComponents()
