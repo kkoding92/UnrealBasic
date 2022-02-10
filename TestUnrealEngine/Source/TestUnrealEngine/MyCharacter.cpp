@@ -37,10 +37,18 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AMyCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
 
 	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
-	AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
-
+	if (AnimInstance)
+	{
+		AnimInstance->OnMontageEnded.AddDynamic(this, &AMyCharacter::OnAttackMontageEnded);
+		AnimInstance->OnAttackHit.AddUObject(this, &AMyCharacter::AttackCheck);
+	}
 }
 
 // Called every frame
@@ -74,6 +82,30 @@ void AMyCharacter::Attack()
 	AttackIndex = (AttackIndex + 1) % 3;
 
 	IsAttacking = true;
+}
+
+void AMyCharacter::AttackCheck()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	float AttackRange = 100.f;
+	float AttackRadius = 50.f;
+
+	bool bResult = GetWorld()->SweepSingleByChannel(
+		OUT HitResult,
+		GetActorLocation(), //액터의 현재위치
+		GetActorLocation() + GetActorForwardVector() * AttackRange, // 액터의 전방 Range 범위 까지
+		FQuat::Identity, // 회전값 없음
+		ECollisionChannel::ECC_EngineTraceChannel2, // 이전에 만든 트레이스 채널
+		FCollisionShape::MakeSphere(AttackRadius), // 스피어 모양으로 충돌 체크
+		Params);
+
+	// 충돌이 일어났고 대상이 유효하다면
+	if (bResult && HitResult.Actor.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Hit Actor : %s"), *HitResult.Actor->GetName());
+	}
 }
 
 void AMyCharacter::UpDown(float Value)
