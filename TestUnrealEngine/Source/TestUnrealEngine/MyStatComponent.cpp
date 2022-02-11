@@ -2,26 +2,52 @@
 
 
 #include "MyStatComponent.h"
+#include "MyGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
-// Sets default values
-AMyStatComponent::AMyStatComponent()
+UMyStatComponent::UMyStatComponent()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
+	//InitializeComponent가 실행되려면 필요
+	bWantsInitializeComponent = true;
+
+	Level = 1;
 }
 
-// Called when the game starts or when spawned
-void AMyStatComponent::BeginPlay()
+void UMyStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
-void AMyStatComponent::Tick(float DeltaTime)
+void UMyStatComponent::InitializeComponent()
 {
-	Super::Tick(DeltaTime);
+	Super::InitializeComponent();
 
+	SetLevel(Level);
+}
+
+void UMyStatComponent::SetLevel(int32 NewLevel)
+{
+	auto MyGameInstance = Cast<UMyGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (MyGameInstance)
+	{
+		auto StatData = MyGameInstance->GetStatData(NewLevel);
+		if (StatData)
+		{
+			Level = StatData->Level;
+			Hp = StatData->MaxHP;
+			Attack = StatData->Attack;
+		}
+	}
+}
+
+void UMyStatComponent::OnAttacked(float DamageAmount)
+{
+	Hp -= DamageAmount;
+	if (Hp < 0)
+		Hp = 0;
+
+	UE_LOG(LogTemp, Warning, TEXT("OnAttacked %d"), Hp);
 }
 
