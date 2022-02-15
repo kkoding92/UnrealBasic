@@ -26,5 +26,11 @@ private:
 
 private:
 	FTimerHandle TimerHandle;
+
+	UPROPERTY()
+	class UBehaviorTree* BehaviorTree;
+
+	UPROPERTY()
+	class UBlackboardData* BlackboardData;
 };
 
